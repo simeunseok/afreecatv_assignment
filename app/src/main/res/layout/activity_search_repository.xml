@@ -4,7 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="viewModel"
+            type="com.example.afreecatvassignment.ui.searchrepository.SearchRepositoryViewModel" />
+        
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -32,6 +35,7 @@
                     android:layout_height="match_parent"
                     android:hint="@string/searchRepository_et_hint"
                     android:inputType="text"
+                    android:text="@={viewModel.keyword}"
                     android:importantForAutofill="no"
                     android:autofillHints="" />
 
