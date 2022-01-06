@@ -4,9 +4,14 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.example.afreecatvassignment.R
 import com.example.afreecatvassignment.databinding.ActivitySearchRepositoryBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class SearchRepositoryActivity : AppCompatActivity() {
@@ -24,6 +29,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
         setContentView(binding.root)
         setupToolbarMenuItemOnClickListener()
         setupRecyclerViewAdapter()
+        collectRepositoryList()
     }
 
     private fun setupToolbarMenuItemOnClickListener() {
@@ -39,5 +45,15 @@ class SearchRepositoryActivity : AppCompatActivity() {
 
     private fun setupRecyclerViewAdapter() {
         binding.rvSearchRepository.adapter = adapter
+    }
+
+    private fun collectRepositoryList() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.repositoryList.collect { list ->
+                    adapter.submitList(list)
+                }
+            }
+        }
     }
 }
