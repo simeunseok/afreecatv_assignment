@@ -17,16 +17,36 @@ class SearchRepositoryViewModel @Inject constructor(
 
     val keyword = MutableStateFlow("")
 
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching: StateFlow<Boolean> = _isSearching
+
+    val isEmpty = MutableStateFlow(false)
+
     private val _repositoryList = MutableStateFlow<List<GitRepository>>(emptyList())
     val repositoryList: StateFlow<List<GitRepository>> = _repositoryList
 
-    fun fetchRepositoryList(keyword: String = this.keyword.value) {
+    private var currentPage = 1
+
+    fun fetchRepositoryList() {
+        currentPage = 1
         viewModelScope.launch {
-            _repositoryList.value = gitRepositoryRemoteDataSource.fetchGitRepositoryList(keyword, 1).run {
-                this.items.map { item ->
+            _repositoryList.value = gitRepositoryRemoteDataSource.fetchGitRepositoryList(this@SearchRepositoryViewModel.keyword.value, currentPage).run {
+                items.map { item ->
                     GitRepository(item.fullName, item.owner.avatarUrl, item.language)
                 }
             }
+        }
+    }
+
+    fun fetchAndAddRepositoryList() {
+        viewModelScope.launch {
+            _isSearching.value = true
+            _repositoryList.value += gitRepositoryRemoteDataSource.fetchGitRepositoryList(this@SearchRepositoryViewModel.keyword.value, ++currentPage).run {
+                items.map { item ->
+                    GitRepository(item.fullName, item.owner.avatarUrl, item.language)
+                }
+            }
+            _isSearching.value = false
         }
     }
 
