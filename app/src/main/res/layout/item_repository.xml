@@ -4,7 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-
+        <variable
+            name="item"
+            type="com.example.afreecatvassignment.ui.searchrepository.model.GitRepository" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -28,6 +30,7 @@
             android:layout_marginStart="16dp"
             android:textSize="24sp"
             android:textStyle="bold"
+            android:text="@{item.name}"
             android:layout_marginBottom="8dp"
             app:layout_constraintBottom_toTopOf="@+id/tv_repository_language"
             app:layout_constraintStart_toEndOf="@+id/iv_repository_avatar"
@@ -39,6 +42,7 @@
             android:id="@+id/tv_repository_language"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="@{item.language}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="@+id/tv_repository_name"
             app:layout_constraintTop_toBottomOf="@+id/tv_repository_name"
