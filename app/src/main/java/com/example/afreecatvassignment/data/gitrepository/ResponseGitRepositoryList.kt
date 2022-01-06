@@ -10,7 +10,7 @@ data class GitRepositoryItem(
     @SerializedName("full_name")
     val fullName: String,
     val owner: GitRepositoryOwner,
-    val language: String
+    val language: String?
 )
 
 data class GitRepositoryOwner(
