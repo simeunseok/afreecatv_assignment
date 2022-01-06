@@ -4,10 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
+        <import type="android.view.View" />
+
         <variable
             name="viewModel"
             type="com.example.afreecatvassignment.ui.searchrepository.SearchRepositoryViewModel" />
-        
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,9 +22,9 @@
             android:id="@+id/layout_searchRepository_toolbar"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" >
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar_searchRepository"
@@ -33,11 +36,11 @@
                     android:id="@+id/et_searchRepository_toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+                    android:autofillHints=""
                     android:hint="@string/searchRepository_et_hint"
-                    android:inputType="text"
-                    android:text="@={viewModel.keyword}"
                     android:importantForAutofill="no"
-                    android:autofillHints="" />
+                    android:inputType="text"
+                    android:text="@={viewModel.keyword}" />
 
             </com.google.android.material.appbar.MaterialToolbar>
 
@@ -48,11 +51,22 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/layout_searchRepository_toolbar"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/pb_searchRepository"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/layout_searchRepository_toolbar"
             tools:listitem="@layout/item_repository" />
+
+        <ProgressBar
+            android:id="@+id/pb_searchRepository"
+            style="?android:progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="@{viewModel.isSearching() ? View.VISIBLE : View.GONE}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

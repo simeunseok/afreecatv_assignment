@@ -51,7 +51,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     super.onScrolled(recyclerView, dx, dy)
 
-                    if (!canScrollVertically(1)) {
+                    if (!canScrollVertically(SCROLL_POSITIVE)) {
                         viewModel.fetchAndAddRepositoryList()
                     }
                 }
@@ -67,5 +67,9 @@ class SearchRepositoryActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    companion object {
+        private const val SCROLL_POSITIVE = 1
     }
 }
