@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AfreecaTvAssignment</string>
+    <string name="searchRepository_et_hint">Search..</string>
 </resources>
