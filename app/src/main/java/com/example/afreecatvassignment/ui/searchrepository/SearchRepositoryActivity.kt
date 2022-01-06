@@ -1,8 +1,8 @@
 package com.example.afreecatvassignment.ui.searchrepository
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -36,7 +36,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
     private fun setupToolbarMenuItemOnClickListener() {
         binding.toolbarSearchRepository.setOnMenuItemClickListener { item ->
             if (item.itemId == R.id.menu_search_repository) {
-                viewModel.fetchRepositoryList()
+                viewModel.fetchRepositoryListNewKeyword()
                 true
             } else {
                 false
@@ -52,7 +52,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
                     super.onScrolled(recyclerView, dx, dy)
 
                     if (!canScrollVertically(SCROLL_POSITIVE)) {
-                        viewModel.fetchAndAddRepositoryList()
+                        viewModel.fetchRepositoryListContinue()
                     }
                 }
             })

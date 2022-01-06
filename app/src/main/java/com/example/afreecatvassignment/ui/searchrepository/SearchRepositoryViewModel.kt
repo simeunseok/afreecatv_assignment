@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.afreecatvassignment.data.gitrepository.remote.GitRepositoryRemoteDataSource
 import com.example.afreecatvassignment.ui.searchrepository.model.GitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -26,26 +27,26 @@ class SearchRepositoryViewModel @Inject constructor(
     val repositoryList: StateFlow<List<GitRepository>> = _repositoryList
 
     private var currentPage = 1
+    private var debounceJob: Job = Job()
 
-    fun fetchRepositoryList() {
+    private suspend fun fetchRepositoryList(page: Int) =
+        gitRepositoryRemoteDataSource.fetchGitRepositoryList(this@SearchRepositoryViewModel.keyword.value, page).run {
+            items.map { item ->
+                GitRepository(item.fullName, item.owner.avatarUrl, item.language)
+            }
+        }
+
+    fun fetchRepositoryListNewKeyword() {
         currentPage = 1
         viewModelScope.launch {
-            _repositoryList.value = gitRepositoryRemoteDataSource.fetchGitRepositoryList(this@SearchRepositoryViewModel.keyword.value, currentPage).run {
-                items.map { item ->
-                    GitRepository(item.fullName, item.owner.avatarUrl, item.language)
-                }
-            }
+            _repositoryList.value = fetchRepositoryList(currentPage)
         }
     }
 
-    fun fetchAndAddRepositoryList() {
+    fun fetchRepositoryListContinue() {
         viewModelScope.launch {
             _isSearching.value = true
-            _repositoryList.value += gitRepositoryRemoteDataSource.fetchGitRepositoryList(this@SearchRepositoryViewModel.keyword.value, ++currentPage).run {
-                items.map { item ->
-                    GitRepository(item.fullName, item.owner.avatarUrl, item.language)
-                }
-            }
+            _repositoryList.value += fetchRepositoryList(++currentPage)
             _isSearching.value = false
         }
     }
