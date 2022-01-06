@@ -29,15 +29,16 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar_searchRepository"
                 android:layout_width="match_parent"
-                android:layout_height="?actionBarSize"
-                app:menu="@menu/menu_search_repository">
+                android:layout_height="?actionBarSize">
 
                 <EditText
                     android:id="@+id/et_searchRepository_toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:autofillHints=""
+                    android:afterTextChanged="@{() -> viewModel.fetchRepositoryListNewKeyword()}"
                     android:hint="@string/searchRepository_et_hint"
+                    android:layout_marginHorizontal="8dp"
                     android:importantForAutofill="no"
                     android:inputType="textNoSuggestions"
                     android:text="@={viewModel.keyword}" />
