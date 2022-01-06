@@ -13,6 +13,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchRepositoryBinding
     private val viewModel by viewModels<SearchRepositoryViewModel>()
+    private val adapter = SearchRepositoryAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,6 +23,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
 
         setContentView(binding.root)
         setupToolbarMenuItemOnClickListener()
+        setupRecyclerViewAdapter()
     }
 
     private fun setupToolbarMenuItemOnClickListener() {
@@ -33,5 +35,9 @@ class SearchRepositoryActivity : AppCompatActivity() {
                 false
             }
         }
+    }
+
+    private fun setupRecyclerViewAdapter() {
+        binding.rvSearchRepository.adapter = adapter
     }
 }
