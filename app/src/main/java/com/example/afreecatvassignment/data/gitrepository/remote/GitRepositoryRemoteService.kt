@@ -10,7 +10,7 @@ interface GitRepositoryRemoteService {
     suspend fun fetchGitRepositoryList(
         @Query("q") q: String,
         @Query("page") page: Int,
-        @Query("per_page") perPage: Int = 10
+        @Query("per_page") perPage: Int
     ): ResponseGitRepositoryList
 
 }

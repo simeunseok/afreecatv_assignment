@@ -5,6 +5,6 @@ import com.google.gson.annotations.SerializedName
 
 interface GitRepositoryRemoteDataSource {
 
-    suspend fun fetchGitRepositoryList(q: String, page: Int, perPage: Int): ResponseGitRepositoryList
+    suspend fun fetchGitRepositoryList(q: String, page: Int, perPage: Int = 10): ResponseGitRepositoryList
 
 }
