@@ -32,7 +32,8 @@
                     android:layout_height="match_parent"
                     android:hint="@string/searchRepository_et_hint"
                     android:inputType="text"
-                    />
+                    android:importantForAutofill="no"
+                    android:autofillHints="" />
 
             </com.google.android.material.appbar.MaterialToolbar>
 
@@ -47,7 +48,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            />
+            tools:listitem="@layout/item_repository" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
