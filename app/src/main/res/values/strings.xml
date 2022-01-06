@@ -3,4 +3,5 @@
     <string name="searchRepository_et_hint">Search..</string>
     <string name="menu_search_repository">검색</string>
     <string name="no_language">No Language Specified</string>
+    <string name="tv_emptyList">검색 결과가 없습니다.</string>
 </resources>
