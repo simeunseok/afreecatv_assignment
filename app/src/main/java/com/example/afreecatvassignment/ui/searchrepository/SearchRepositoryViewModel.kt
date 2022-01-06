@@ -6,6 +6,7 @@ import com.example.afreecatvassignment.data.gitrepository.remote.GitRepositoryRe
 import com.example.afreecatvassignment.ui.searchrepository.model.GitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -27,10 +28,11 @@ class SearchRepositoryViewModel @Inject constructor(
     val repositoryList: StateFlow<List<GitRepository>> = _repositoryList
 
     private var currentPage = 1
-    private var debounceJob: Job = Job()
+    private var searchDebounceJob: Job = Job()
+    private var continueDebounceJob: Job = Job()
 
     private suspend fun fetchRepositoryList(page: Int) =
-        gitRepositoryRemoteDataSource.fetchGitRepositoryList(this@SearchRepositoryViewModel.keyword.value, page).run {
+        gitRepositoryRemoteDataSource.fetchGitRepositoryList(keyword.value, page).run {
             items.map { item ->
                 GitRepository(item.fullName, item.owner.avatarUrl, item.language)
             }
@@ -38,17 +40,24 @@ class SearchRepositoryViewModel @Inject constructor(
 
     fun fetchRepositoryListNewKeyword() {
         currentPage = 1
-        viewModelScope.launch {
+        searchDebounceJob.cancel()
+        searchDebounceJob = viewModelScope.launch {
+            delay(DEBOUNCE_LIMIT)
             _repositoryList.value = fetchRepositoryList(currentPage)
         }
     }
 
     fun fetchRepositoryListContinue() {
-        viewModelScope.launch {
+        continueDebounceJob.cancel()
+        continueDebounceJob = viewModelScope.launch {
             _isSearching.value = true
+            delay(DEBOUNCE_LIMIT)
             _repositoryList.value += fetchRepositoryList(++currentPage)
             _isSearching.value = false
         }
     }
 
+    companion object {
+        private const val DEBOUNCE_LIMIT = 500L
+    }
 }

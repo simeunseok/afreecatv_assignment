@@ -26,22 +26,10 @@ class SearchRepositoryActivity : AppCompatActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.activity_search_repository)
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
-
         setContentView(binding.root)
-        setupToolbarMenuItemOnClickListener()
+
         setupRecyclerViewAdapter()
         collectRepositoryList()
-    }
-
-    private fun setupToolbarMenuItemOnClickListener() {
-        binding.toolbarSearchRepository.setOnMenuItemClickListener { item ->
-            if (item.itemId == R.id.menu_search_repository) {
-                viewModel.fetchRepositoryListNewKeyword()
-                true
-            } else {
-                false
-            }
-        }
     }
 
     private fun setupRecyclerViewAdapter() {
