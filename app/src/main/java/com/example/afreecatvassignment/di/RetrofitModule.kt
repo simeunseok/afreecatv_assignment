@@ -13,7 +13,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object RetrofitModule {
 
-    private const val GITHUB_URL = "http://api.github.com"
+    private const val GITHUB_URL = "https://api.github.com"
 
     @Provides
     @Singleton
