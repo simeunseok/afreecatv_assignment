@@ -21,5 +21,17 @@ class SearchRepositoryActivity : AppCompatActivity() {
         binding.viewModel = viewModel
 
         setContentView(binding.root)
+        setupToolbarMenuItemOnClickListener()
+    }
+
+    private fun setupToolbarMenuItemOnClickListener() {
+        binding.toolbarSearchRepository.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.menu_search_repository) {
+                viewModel.fetchRepositoryList()
+                true
+            } else {
+                false
+            }
+        }
     }
 }
