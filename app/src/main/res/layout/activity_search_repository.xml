@@ -39,12 +39,24 @@
                     android:autofillHints=""
                     android:hint="@string/searchRepository_et_hint"
                     android:importantForAutofill="no"
-                    android:inputType="text"
+                    android:inputType="textNoSuggestions"
                     android:text="@={viewModel.keyword}" />
 
             </com.google.android.material.appbar.MaterialToolbar>
 
         </com.google.android.material.appbar.AppBarLayout>
+
+        <TextView
+            android:id="@+id/tv_searchRepository_emptyList"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/tv_emptyList"
+            android:visibility="@{viewModel.isEmpty() ? View.VISIBLE : View.GONE}"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="@id/rv_searchRepository"
+            app:layout_constraintBottom_toBottomOf="@id/rv_searchRepository" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_searchRepository"

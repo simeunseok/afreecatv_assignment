@@ -63,6 +63,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.repositoryList.collect { list ->
+                    viewModel.isEmpty.value = list.isEmpty()
                     searchRepositoryAdapter.submitList(list)
                 }
             }
