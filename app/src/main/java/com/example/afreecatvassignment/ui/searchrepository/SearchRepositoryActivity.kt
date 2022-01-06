@@ -19,7 +19,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchRepositoryBinding
     private val viewModel by viewModels<SearchRepositoryViewModel>()
-    private val adapter = SearchRepositoryAdapter()
+    private val searchRepositoryAdapter = SearchRepositoryAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,23 +45,25 @@ class SearchRepositoryActivity : AppCompatActivity() {
     }
 
     private fun setupRecyclerViewAdapter() {
-        binding.rvSearchRepository.adapter = adapter
-        binding.rvSearchRepository.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
+        with(binding.rvSearchRepository) {
+            adapter = searchRepositoryAdapter
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    super.onScrolled(recyclerView, dx, dy)
 
-                if (!binding.rvSearchRepository.canScrollVertically(1)) {
-                    viewModel.fetchAndAddRepositoryList()
+                    if (!canScrollVertically(1)) {
+                        viewModel.fetchAndAddRepositoryList()
+                    }
                 }
-            }
-        })
+            })
+        }
     }
 
     private fun collectRepositoryList() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.repositoryList.collect { list ->
-                    adapter.submitList(list)
+                    searchRepositoryAdapter.submitList(list)
                 }
             }
         }
