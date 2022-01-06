@@ -5,7 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 data class GitRepository(
     val name: String,
     val avatarUrl: String,
-    val language: String,
+    val language: String?,
 ) {
     companion object {
         val diffUtil by lazy {

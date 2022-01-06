@@ -2,4 +2,5 @@
     <string name="app_name">AfreecaTvAssignment</string>
     <string name="searchRepository_et_hint">Search..</string>
     <string name="menu_search_repository">검색</string>
+    <string name="no_language">No Language Specified</string>
 </resources>
