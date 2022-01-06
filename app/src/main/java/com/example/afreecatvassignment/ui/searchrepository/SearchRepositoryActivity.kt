@@ -7,6 +7,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.recyclerview.widget.RecyclerView
 import com.example.afreecatvassignment.R
 import com.example.afreecatvassignment.databinding.ActivitySearchRepositoryBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +46,15 @@ class SearchRepositoryActivity : AppCompatActivity() {
 
     private fun setupRecyclerViewAdapter() {
         binding.rvSearchRepository.adapter = adapter
+        binding.rvSearchRepository.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                if (!binding.rvSearchRepository.canScrollVertically(1)) {
+                    viewModel.fetchAndAddRepositoryList()
+                }
+            }
+        })
     }
 
     private fun collectRepositoryList() {
