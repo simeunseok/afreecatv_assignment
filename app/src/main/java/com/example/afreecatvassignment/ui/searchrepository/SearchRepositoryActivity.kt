@@ -4,12 +4,10 @@ import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.afreecatvassignment.R
 import com.example.afreecatvassignment.databinding.ActivitySearchRepositoryBinding
+import com.example.afreecatvassignment.util.launchAndRepeatWithLifecycle
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -31,9 +29,12 @@ class SearchRepositoryActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupRecyclerViewAdapter()
-        collectRepositoryList()
-        collectNoMoreData()
-        collectCantAccessNetwork()
+
+        launchAndRepeatWithLifecycle {
+            launch { collectRepositoryList() }
+            launch { collectNoMoreData() }
+            launch { collectCantAccessNetwork() }
+        }
     }
 
     private fun setupRecyclerViewAdapter() {
@@ -51,36 +52,24 @@ class SearchRepositoryActivity : AppCompatActivity() {
         }
     }
 
-    private fun collectRepositoryList() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.repositoryList.collect { list ->
-                    viewModel.isEmpty.value = list.isEmpty()
-                    searchRepositoryAdapter.submitList(list)
-                }
-            }
+    private suspend fun collectRepositoryList() {
+        viewModel.repositoryList.collect { list ->
+            viewModel.isEmpty.value = list.isEmpty()
+            searchRepositoryAdapter.submitList(list)
         }
     }
 
-    private fun collectNoMoreData() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.noMoreData.collectLatest {
-                    Snackbar.make(binding.root, getString(R.string.snackbar_noMoreData), Snackbar.LENGTH_SHORT)
-                        .show()
-                }
-            }
+    private suspend fun collectNoMoreData() {
+        viewModel.noMoreData.collectLatest {
+            Snackbar.make(binding.root, getString(R.string.snackbar_noMoreData), Snackbar.LENGTH_SHORT)
+                .show()
         }
     }
 
-    private fun collectCantAccessNetwork() {
-        lifecycleScope.launch {
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.cantAccessNetwork.collectLatest {
-                    Snackbar.make(binding.root, getString(R.string.snackbar_cantAccessNetwork), Snackbar.LENGTH_SHORT)
-                        .show()
-                }
-            }
+    private suspend fun collectCantAccessNetwork() {
+        viewModel.cantAccessNetwork.collectLatest {
+            Snackbar.make(binding.root, getString(R.string.snackbar_cantAccessNetwork), Snackbar.LENGTH_SHORT)
+                .show()
         }
     }
 
