@@ -12,6 +12,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,7 +38,7 @@ class SearchRepositoryViewModel @Inject constructor(
 
     private var currentPage = 1
     private var searchDebounceJob: Job = Job()
-    private var continueDebounceJob: Job = Job()
+    private var loadingFlag = AtomicBoolean(false)
 
     private suspend fun fetchRepositoryList(page: Int) =
         gitRepositoryRemoteDataSource.fetchGitRepositoryList(keyword.value, page).run {
@@ -58,10 +59,13 @@ class SearchRepositoryViewModel @Inject constructor(
     }
 
     fun fetchRepositoryListContinue() {
-        continueDebounceJob.cancel()
-        continueDebounceJob = viewModelScope.launch {
+        viewModelScope.launch {
+            if (loadingFlag.get()) {
+                return@launch
+            }
+            loadingFlag.set(true)
             _isSearchingNextPage.value = true
-            delay(DEBOUNCE_LIMIT)
+
             val result = fetchRepositoryList(currentPage + 1)
             if (result.isEmpty()) {
                 _noMoreData.emit(Unit)
@@ -69,7 +73,9 @@ class SearchRepositoryViewModel @Inject constructor(
                 _repositoryList.value += result
                 currentPage++
             }
+
             _isSearchingNextPage.value = false
+            loadingFlag.set(false)
         }
     }
 
