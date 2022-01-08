@@ -7,7 +7,9 @@ import com.example.afreecatvassignment.ui.searchrepository.model.GitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -26,6 +28,9 @@ class SearchRepositoryViewModel @Inject constructor(
 
     private val _isSearchingNextPage = MutableStateFlow(false)
     val isSearchNextPage: StateFlow<Boolean> = _isSearchingNextPage
+
+    private val _noMoreData = MutableSharedFlow<Unit>()
+    val noMoreData: SharedFlow<Unit> = _noMoreData
 
     private val _repositoryList = MutableStateFlow<List<GitRepository>>(emptyList())
     val repositoryList: StateFlow<List<GitRepository>> = _repositoryList
@@ -57,7 +62,13 @@ class SearchRepositoryViewModel @Inject constructor(
         continueDebounceJob = viewModelScope.launch {
             _isSearchingNextPage.value = true
             delay(DEBOUNCE_LIMIT)
-            _repositoryList.value += fetchRepositoryList(++currentPage)
+            val result = fetchRepositoryList(currentPage + 1)
+            if (result.isEmpty()) {
+                _noMoreData.emit(Unit)
+            } else {
+                _repositoryList.value += result
+                currentPage++
+            }
             _isSearchingNextPage.value = false
         }
     }
