@@ -33,6 +33,9 @@ class SearchRepositoryViewModel @Inject constructor(
     private val _noMoreData = MutableSharedFlow<Unit>()
     val noMoreData: SharedFlow<Unit> = _noMoreData
 
+    private val _cantAccessNetwork = MutableSharedFlow<Unit>()
+    var cantAccessNetwork: SharedFlow<Unit> = _cantAccessNetwork
+
     private val _repositoryList = MutableStateFlow<List<GitRepository>>(emptyList())
     val repositoryList: StateFlow<List<GitRepository>> = _repositoryList
 
@@ -41,7 +44,7 @@ class SearchRepositoryViewModel @Inject constructor(
     private var loadingFlag = AtomicBoolean(false)
 
     private suspend fun fetchRepositoryList(page: Int) =
-        gitRepositoryRemoteDataSource.fetchGitRepositoryList(keyword.value, page).run {
+        gitRepositoryRemoteDataSource.fetchGitRepositoryList(keyword.value, page)?.run {
             items.map { item ->
                 GitRepository(item.fullName, item.owner.avatarUrl, item.language)
             }
@@ -53,7 +56,14 @@ class SearchRepositoryViewModel @Inject constructor(
         searchDebounceJob = viewModelScope.launch {
             _isSearch.value = true
             delay(DEBOUNCE_LIMIT)
-            _repositoryList.value = fetchRepositoryList(currentPage)
+
+            if (keyword.value.isNotBlank()) {
+                when (val result = fetchRepositoryList(currentPage)) {
+                    null -> _cantAccessNetwork.emit(Unit)
+                    else -> _repositoryList.value = result
+                }
+            }
+
             _isSearch.value = false
         }
     }
@@ -66,14 +76,14 @@ class SearchRepositoryViewModel @Inject constructor(
             loadingFlag.set(true)
             _isSearchingNextPage.value = true
 
-            val result = fetchRepositoryList(currentPage + 1)
-            if (result.isEmpty()) {
-                _noMoreData.emit(Unit)
-            } else {
-                _repositoryList.value += result
-                currentPage++
+            when (val result = fetchRepositoryList(currentPage + 1)) {
+                null -> _cantAccessNetwork.emit(Unit)
+                isEmpty -> _noMoreData.emit(Unit)
+                else -> {
+                    _repositoryList.value += result
+                    currentPage++
+                }
             }
-
             _isSearchingNextPage.value = false
             loadingFlag.set(false)
         }
