@@ -57,12 +57,13 @@ class SearchRepositoryViewModel @Inject constructor(
             _isSearch.value = true
             delay(DEBOUNCE_LIMIT)
 
-            val result = fetchRepositoryList(currentPage)
-            if (result == null) {
-                _cantAccessNetwork.emit(Unit)
-            } else {
-                _repositoryList.value = result
+            if (keyword.value.isNotBlank()) {
+                when (val result = fetchRepositoryList(currentPage)) {
+                    null -> _cantAccessNetwork.emit(Unit)
+                    else -> _repositoryList.value = result
+                }
             }
+
             _isSearch.value = false
         }
     }

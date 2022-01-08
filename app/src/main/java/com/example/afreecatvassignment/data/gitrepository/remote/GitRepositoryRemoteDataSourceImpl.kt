@@ -9,5 +9,4 @@ class GitRepositoryRemoteDataSourceImpl @Inject constructor(
     override suspend fun fetchGitRepositoryList(q: String, page: Int, perPage: Int) = kotlin.runCatching {
         gitRepositoryRemoteService.fetchGitRepositoryList(q, page, perPage)
     }.getOrNull()
-
 }
