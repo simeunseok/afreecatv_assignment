@@ -19,10 +19,13 @@ class SearchRepositoryViewModel @Inject constructor(
 
     val keyword = MutableStateFlow("")
 
-    private val _isSearching = MutableStateFlow(false)
-    val isSearching: StateFlow<Boolean> = _isSearching
-
     val isEmpty = MutableStateFlow(false)
+
+    private val _isSearch = MutableStateFlow(false)
+    val isSearch: StateFlow<Boolean> = _isSearch
+
+    private val _isSearchingNextPage = MutableStateFlow(false)
+    val isSearchNextPage: StateFlow<Boolean> = _isSearchingNextPage
 
     private val _repositoryList = MutableStateFlow<List<GitRepository>>(emptyList())
     val repositoryList: StateFlow<List<GitRepository>> = _repositoryList
@@ -42,18 +45,20 @@ class SearchRepositoryViewModel @Inject constructor(
         currentPage = 1
         searchDebounceJob.cancel()
         searchDebounceJob = viewModelScope.launch {
+            _isSearch.value = true
             delay(DEBOUNCE_LIMIT)
             _repositoryList.value = fetchRepositoryList(currentPage)
+            _isSearch.value = false
         }
     }
 
     fun fetchRepositoryListContinue() {
         continueDebounceJob.cancel()
         continueDebounceJob = viewModelScope.launch {
-            _isSearching.value = true
+            _isSearchingNextPage.value = true
             delay(DEBOUNCE_LIMIT)
             _repositoryList.value += fetchRepositoryList(++currentPage)
-            _isSearching.value = false
+            _isSearchingNextPage.value = false
         }
     }
 
