@@ -4,4 +4,5 @@
     <string name="menu_search_repository">검색</string>
     <string name="no_language">No Language Specified</string>
     <string name="tv_emptyList">검색 결과가 없습니다.</string>
+    <string name="snackbar_noMoreData">추가 검색 결과가 없습니다.</string>
 </resources>

@@ -10,8 +10,10 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.RecyclerView
 import com.example.afreecatvassignment.R
 import com.example.afreecatvassignment.databinding.ActivitySearchRepositoryBinding
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
@@ -30,6 +32,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
 
         setupRecyclerViewAdapter()
         collectRepositoryList()
+        collectNoMoreData()
     }
 
     private fun setupRecyclerViewAdapter() {
@@ -53,6 +56,17 @@ class SearchRepositoryActivity : AppCompatActivity() {
                 viewModel.repositoryList.collect { list ->
                     viewModel.isEmpty.value = list.isEmpty()
                     searchRepositoryAdapter.submitList(list)
+                }
+            }
+        }
+    }
+
+    private fun collectNoMoreData() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.noMoreData.collectLatest {
+                    Snackbar.make(binding.root, getString(R.string.snackbar_noMoreData), Snackbar.LENGTH_SHORT)
+                        .show()
                 }
             }
         }

@@ -7,9 +7,12 @@ import com.example.afreecatvassignment.ui.searchrepository.model.GitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.inject.Inject
 
 @HiltViewModel
@@ -19,17 +22,23 @@ class SearchRepositoryViewModel @Inject constructor(
 
     val keyword = MutableStateFlow("")
 
-    private val _isSearching = MutableStateFlow(false)
-    val isSearching: StateFlow<Boolean> = _isSearching
-
     val isEmpty = MutableStateFlow(false)
+
+    private val _isSearch = MutableStateFlow(false)
+    val isSearch: StateFlow<Boolean> = _isSearch
+
+    private val _isSearchingNextPage = MutableStateFlow(false)
+    val isSearchNextPage: StateFlow<Boolean> = _isSearchingNextPage
+
+    private val _noMoreData = MutableSharedFlow<Unit>()
+    val noMoreData: SharedFlow<Unit> = _noMoreData
 
     private val _repositoryList = MutableStateFlow<List<GitRepository>>(emptyList())
     val repositoryList: StateFlow<List<GitRepository>> = _repositoryList
 
     private var currentPage = 1
     private var searchDebounceJob: Job = Job()
-    private var continueDebounceJob: Job = Job()
+    private var loadingFlag = AtomicBoolean(false)
 
     private suspend fun fetchRepositoryList(page: Int) =
         gitRepositoryRemoteDataSource.fetchGitRepositoryList(keyword.value, page).run {
@@ -42,18 +51,31 @@ class SearchRepositoryViewModel @Inject constructor(
         currentPage = 1
         searchDebounceJob.cancel()
         searchDebounceJob = viewModelScope.launch {
+            _isSearch.value = true
             delay(DEBOUNCE_LIMIT)
             _repositoryList.value = fetchRepositoryList(currentPage)
+            _isSearch.value = false
         }
     }
 
     fun fetchRepositoryListContinue() {
-        continueDebounceJob.cancel()
-        continueDebounceJob = viewModelScope.launch {
-            _isSearching.value = true
-            delay(DEBOUNCE_LIMIT)
-            _repositoryList.value += fetchRepositoryList(++currentPage)
-            _isSearching.value = false
+        viewModelScope.launch {
+            if (loadingFlag.get()) {
+                return@launch
+            }
+            loadingFlag.set(true)
+            _isSearchingNextPage.value = true
+
+            val result = fetchRepositoryList(currentPage + 1)
+            if (result.isEmpty()) {
+                _noMoreData.emit(Unit)
+            } else {
+                _repositoryList.value += result
+                currentPage++
+            }
+
+            _isSearchingNextPage.value = false
+            loadingFlag.set(false)
         }
     }
 

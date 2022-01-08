@@ -58,25 +58,36 @@
             app:layout_constraintTop_toTopOf="@id/rv_searchRepository"
             app:layout_constraintBottom_toBottomOf="@id/rv_searchRepository" />
 
-
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_searchRepository"
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@id/pb_searchRepository"
+            app:layout_constraintBottom_toTopOf="@id/pb_searchRepository_nextPage"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/layout_searchRepository_toolbar"
             tools:listitem="@layout/item_repository" />
 
         <ProgressBar
-            android:id="@+id/pb_searchRepository"
+            android:id="@+id/pb_searchRepository_search"
             style="?android:progressBarStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:visibility="@{viewModel.isSearching() ? View.VISIBLE : View.GONE}"
+            android:visibility="@{viewModel.isSearch() ? View.VISIBLE : View.GONE}"
+            app:layout_constraintTop_toTopOf="@id/rv_searchRepository"
+            app:layout_constraintBottom_toBottomOf="@id/rv_searchRepository"
+            app:layout_constraintStart_toStartOf="@id/rv_searchRepository"
+            app:layout_constraintEnd_toEndOf="@id/rv_searchRepository" />
+
+        <ProgressBar
+            android:id="@+id/pb_searchRepository_nextPage"
+            style="?android:progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="@{viewModel.isSearchNextPage() ? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
