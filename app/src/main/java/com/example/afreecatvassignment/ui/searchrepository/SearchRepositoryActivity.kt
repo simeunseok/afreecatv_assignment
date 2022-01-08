@@ -33,6 +33,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
         setupRecyclerViewAdapter()
         collectRepositoryList()
         collectNoMoreData()
+        collectCantAccessNetwork()
     }
 
     private fun setupRecyclerViewAdapter() {
@@ -66,6 +67,17 @@ class SearchRepositoryActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.noMoreData.collectLatest {
                     Snackbar.make(binding.root, getString(R.string.snackbar_noMoreData), Snackbar.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        }
+    }
+
+    private fun collectCantAccessNetwork() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.cantAccessNetwork.collectLatest {
+                    Snackbar.make(binding.root, getString(R.string.snackbar_cantAccessNetwork), Snackbar.LENGTH_SHORT)
                         .show()
                 }
             }
