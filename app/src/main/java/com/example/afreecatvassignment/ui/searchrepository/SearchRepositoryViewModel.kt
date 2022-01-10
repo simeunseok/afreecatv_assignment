@@ -34,7 +34,10 @@ class SearchRepositoryViewModel @Inject constructor(
     val noMoreData: SharedFlow<Unit> = _noMoreData
 
     private val _cantAccessNetwork = MutableSharedFlow<Unit>()
-    var cantAccessNetwork: SharedFlow<Unit> = _cantAccessNetwork
+    val cantAccessNetwork: SharedFlow<Unit> = _cantAccessNetwork
+
+    private val _searchEvent = MutableSharedFlow<Unit>()
+    val searchEvent: SharedFlow<Unit> = _searchEvent
 
     private val _repositoryList = MutableStateFlow<List<GitRepository>>(emptyList())
     val repositoryList: StateFlow<List<GitRepository>> = _repositoryList
@@ -50,12 +53,12 @@ class SearchRepositoryViewModel @Inject constructor(
             }
         }
 
-    fun fetchRepositoryListNewKeyword() {
+    fun fetchRepositoryListNewKeyword(debounceLimit: Long) {
         currentPage = 1
         searchDebounceJob.cancel()
         searchDebounceJob = viewModelScope.launch {
             _isSearch.value = true
-            delay(DEBOUNCE_LIMIT)
+            delay(debounceLimit)
 
             if (keyword.value.isNotBlank()) {
                 when (val result = fetchRepositoryList(currentPage)) {
@@ -74,22 +77,26 @@ class SearchRepositoryViewModel @Inject constructor(
                 return@launch
             }
             loadingFlag.set(true)
-            _isSearchingNextPage.value = true
 
-            when (val result = fetchRepositoryList(currentPage + 1)) {
-                null -> _cantAccessNetwork.emit(Unit)
-                isEmpty -> _noMoreData.emit(Unit)
-                else -> {
-                    _repositoryList.value += result
-                    currentPage++
+            if (keyword.value.isNotBlank()) {
+                _isSearchingNextPage.value = true
+                when (val result = fetchRepositoryList(currentPage + 1)) {
+                    null -> _cantAccessNetwork.emit(Unit)
+                    isEmpty -> _noMoreData.emit(Unit)
+                    else -> {
+                        _repositoryList.value += result
+                        currentPage++
+                    }
                 }
+                _isSearchingNextPage.value = false
             }
-            _isSearchingNextPage.value = false
             loadingFlag.set(false)
         }
     }
 
-    companion object {
-        private const val DEBOUNCE_LIMIT = 500L
+    fun emitSearchEvent() {
+        viewModelScope.launch {
+            _searchEvent.emit(Unit)
+        }
     }
 }
