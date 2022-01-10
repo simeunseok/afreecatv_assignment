@@ -99,7 +99,7 @@ class SearchRepositoryActivity : AppCompatActivity() {
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastTime >= PERIODMILLIS) {
                 lastTime = currentTime
-                viewModel.fetchRepositoryList()
+                viewModel.fetchRepositoryListNewKeyword(0L)
             }
         }
     }

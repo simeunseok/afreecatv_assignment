@@ -53,27 +53,12 @@ class SearchRepositoryViewModel @Inject constructor(
             }
         }
 
-    fun fetchRepositoryList() {
-        viewModelScope.launch {
-            _isSearch.value = true
-
-            if (keyword.value.isNotBlank()) {
-                when (val result = fetchRepositoryList(currentPage)) {
-                    null -> _cantAccessNetwork.emit(Unit)
-                    else -> _repositoryList.value = result
-                }
-            }
-
-            _isSearch.value = false
-        }
-    }
-
-    fun fetchRepositoryListNewKeyword() {
+    fun fetchRepositoryListNewKeyword(debounceLimit: Long) {
         currentPage = 1
         searchDebounceJob.cancel()
         searchDebounceJob = viewModelScope.launch {
             _isSearch.value = true
-            delay(DEBOUNCE_LIMIT)
+            delay(debounceLimit)
 
             if (keyword.value.isNotBlank()) {
                 when (val result = fetchRepositoryList(currentPage)) {
@@ -111,9 +96,5 @@ class SearchRepositoryViewModel @Inject constructor(
         viewModelScope.launch {
             _searchEvent.emit(Unit)
         }
-    }
-
-    companion object {
-        private const val DEBOUNCE_LIMIT = 500L
     }
 }

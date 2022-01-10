@@ -37,7 +37,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginHorizontal="8dp"
-                    android:afterTextChanged="@{() -> viewModel.fetchRepositoryListNewKeyword()}"
+                    android:afterTextChanged="@{() -> viewModel.fetchRepositoryListNewKeyword(500L)}"
                     android:autofillHints=""
                     android:hint="@string/searchRepository_et_hint"
                     android:importantForAutofill="no"
