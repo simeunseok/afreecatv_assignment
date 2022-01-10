@@ -54,6 +54,10 @@
 ### 기타
 - EditText 밖 영역을 클릭하면 키보드 창을 내림
 
+### 구현 과정
+- Issue 탭에 요구사항 및 작업 단위 작성
+- Issue 단위로 PR 후 
+
 # 개발환경
 - 언어 : Kotlin
 - minSdkVersion : 23
