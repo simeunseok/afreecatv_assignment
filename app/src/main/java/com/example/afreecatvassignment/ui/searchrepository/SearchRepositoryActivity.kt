@@ -1,6 +1,10 @@
 package com.example.afreecatvassignment.ui.searchrepository
 
+import android.content.Context
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.inputmethod.InputMethodManager
+import android.widget.EditText
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -35,6 +39,23 @@ class SearchRepositoryActivity : AppCompatActivity() {
             launch { collectNoMoreData() }
             launch { collectCantAccessNetwork() }
         }
+    }
+
+    override fun dispatchTouchEvent(ev: MotionEvent): Boolean {
+        currentFocus?.run {
+            if ((ev.action == MotionEvent.ACTION_UP || ev.action == MotionEvent.ACTION_MOVE) && this is EditText) {
+                val screenSpot = IntArray(2)
+                getLocationOnScreen(screenSpot)
+                val x: Float = ev.rawX + left - screenSpot[0]
+                val y: Float = ev.rawY + top - screenSpot[1]
+                if (x < left || x > right || y < top || y > bottom) {
+                    (getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).hideSoftInputFromWindow(
+                        window.decorView.applicationWindowToken, 0
+                    )
+                }
+            }
+        }
+        return super.dispatchTouchEvent(ev)
     }
 
     private fun setupRecyclerViewAdapter() {
