@@ -77,17 +77,19 @@ class SearchRepositoryViewModel @Inject constructor(
                 return@launch
             }
             loadingFlag.set(true)
-            _isSearchingNextPage.value = true
 
-            when (val result = fetchRepositoryList(currentPage + 1)) {
-                null -> _cantAccessNetwork.emit(Unit)
-                isEmpty -> _noMoreData.emit(Unit)
-                else -> {
-                    _repositoryList.value += result
-                    currentPage++
+            if (keyword.value.isNotBlank()) {
+                _isSearchingNextPage.value = true
+                when (val result = fetchRepositoryList(currentPage + 1)) {
+                    null -> _cantAccessNetwork.emit(Unit)
+                    isEmpty -> _noMoreData.emit(Unit)
+                    else -> {
+                        _repositoryList.value += result
+                        currentPage++
+                    }
                 }
+                _isSearchingNextPage.value = false
             }
-            _isSearchingNextPage.value = false
             loadingFlag.set(false)
         }
     }
