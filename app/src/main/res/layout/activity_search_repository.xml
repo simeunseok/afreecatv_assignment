@@ -29,16 +29,17 @@
             <com.google.android.material.appbar.MaterialToolbar
                 android:id="@+id/toolbar_searchRepository"
                 android:layout_width="match_parent"
-                android:layout_height="?actionBarSize">
+                android:layout_height="?actionBarSize"
+                app:menu="@menu/menu_search_repository">
 
                 <EditText
                     android:id="@+id/et_searchRepository_toolbar"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:autofillHints=""
-                    android:afterTextChanged="@{() -> viewModel.fetchRepositoryListNewKeyword()}"
-                    android:hint="@string/searchRepository_et_hint"
                     android:layout_marginHorizontal="8dp"
+                    android:afterTextChanged="@{() -> viewModel.fetchRepositoryListNewKeyword()}"
+                    android:autofillHints=""
+                    android:hint="@string/searchRepository_et_hint"
                     android:importantForAutofill="no"
                     android:inputType="textNoSuggestions"
                     android:text="@={viewModel.keyword}" />
@@ -53,10 +54,10 @@
             android:layout_height="wrap_content"
             android:text="@string/tv_emptyList"
             android:visibility="@{viewModel.isEmpty() ? View.VISIBLE : View.GONE}"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@id/rv_searchRepository"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/rv_searchRepository"
-            app:layout_constraintBottom_toBottomOf="@id/rv_searchRepository" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/rv_searchRepository" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_searchRepository"
@@ -76,10 +77,10 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:visibility="@{viewModel.isSearch() ? View.VISIBLE : View.GONE}"
-            app:layout_constraintTop_toTopOf="@id/rv_searchRepository"
             app:layout_constraintBottom_toBottomOf="@id/rv_searchRepository"
+            app:layout_constraintEnd_toEndOf="@id/rv_searchRepository"
             app:layout_constraintStart_toStartOf="@id/rv_searchRepository"
-            app:layout_constraintEnd_toEndOf="@id/rv_searchRepository" />
+            app:layout_constraintTop_toTopOf="@id/rv_searchRepository" />
 
         <ProgressBar
             android:id="@+id/pb_searchRepository_nextPage"

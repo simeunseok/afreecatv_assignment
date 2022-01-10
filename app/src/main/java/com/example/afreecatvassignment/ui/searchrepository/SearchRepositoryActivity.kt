@@ -33,9 +33,11 @@ class SearchRepositoryActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setupRecyclerViewAdapter()
+        setupToolbarMenuItemOnClickListener()
 
         launchAndRepeatWithLifecycle {
             launch { collectRepositoryList() }
+            launch { collectSearchEvent() }
             launch { collectNoMoreData() }
             launch { collectCantAccessNetwork() }
         }
@@ -56,6 +58,17 @@ class SearchRepositoryActivity : AppCompatActivity() {
             }
         }
         return super.dispatchTouchEvent(ev)
+    }
+
+    private fun setupToolbarMenuItemOnClickListener() {
+        binding.toolbarSearchRepository.setOnMenuItemClickListener { item ->
+            if (item.itemId == R.id.menu_search_repository) {
+                viewModel.emitSearchEvent()
+                true
+            } else {
+                false
+            }
+        }
     }
 
     private fun setupRecyclerViewAdapter() {
@@ -80,6 +93,17 @@ class SearchRepositoryActivity : AppCompatActivity() {
         }
     }
 
+    private suspend fun collectSearchEvent() {
+        var lastTime = 0L
+        viewModel.searchEvent.collect {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastTime >= PERIODMILLIS) {
+                lastTime = currentTime
+                viewModel.fetchRepositoryList()
+            }
+        }
+    }
+
     private suspend fun collectNoMoreData() {
         viewModel.noMoreData.collectLatest {
             Snackbar.make(binding.root, getString(R.string.snackbar_noMoreData), Snackbar.LENGTH_SHORT)
@@ -96,5 +120,6 @@ class SearchRepositoryActivity : AppCompatActivity() {
 
     companion object {
         private const val SCROLL_POSITIVE = 1
+        private const val PERIODMILLIS = 500L
     }
 }

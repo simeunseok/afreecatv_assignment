@@ -34,7 +34,10 @@ class SearchRepositoryViewModel @Inject constructor(
     val noMoreData: SharedFlow<Unit> = _noMoreData
 
     private val _cantAccessNetwork = MutableSharedFlow<Unit>()
-    var cantAccessNetwork: SharedFlow<Unit> = _cantAccessNetwork
+    val cantAccessNetwork: SharedFlow<Unit> = _cantAccessNetwork
+
+    private val _searchEvent = MutableSharedFlow<Unit>()
+    val searchEvent: SharedFlow<Unit> = _searchEvent
 
     private val _repositoryList = MutableStateFlow<List<GitRepository>>(emptyList())
     val repositoryList: StateFlow<List<GitRepository>> = _repositoryList
@@ -49,6 +52,21 @@ class SearchRepositoryViewModel @Inject constructor(
                 GitRepository(item.fullName, item.owner.avatarUrl, item.language)
             }
         }
+
+    fun fetchRepositoryList() {
+        viewModelScope.launch {
+            _isSearch.value = true
+
+            if (keyword.value.isNotBlank()) {
+                when (val result = fetchRepositoryList(currentPage)) {
+                    null -> _cantAccessNetwork.emit(Unit)
+                    else -> _repositoryList.value = result
+                }
+            }
+
+            _isSearch.value = false
+        }
+    }
 
     fun fetchRepositoryListNewKeyword() {
         currentPage = 1
@@ -86,6 +104,12 @@ class SearchRepositoryViewModel @Inject constructor(
             }
             _isSearchingNextPage.value = false
             loadingFlag.set(false)
+        }
+    }
+
+    fun emitSearchEvent() {
+        viewModelScope.launch {
+            _searchEvent.emit(Unit)
         }
     }
 
